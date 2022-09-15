@@ -1,23 +1,27 @@
 ﻿using System;
+using System.Net.Security;
+
 namespace Kata
 {
     class priceCalc
-    {
+    {   
+         public static Dictionary<int,double> keysDiscount=new();
+           
         public static void Main()
         {
+            keysDiscount.Add(12345, 0.12);
             product myProduct = new("ball", 20405, 15.1567, 0.20, 0.15, true);
-            Console.WriteLine($"Product price reported as {myProduct.price} before tax and {myProduct.calcPriceAfterTax()} after {myProduct.tax * 100}% tax  ");
-            if (myProduct.haveDiscount)
-            {
-                Console.WriteLine($", And with {myProduct.discount * 100}% discont its {myProduct.calcPriceAfterDiscount()}");
-            }
-            else
-            {
-                Console.WriteLine("Program doesn’t show any discounted amount.");
-
-            }
+            print(myProduct);
         }
-
+        
+        private static void print(product myProduct)
+        {
+            Console.WriteLine($"TAX={myProduct.tax * 100}% universal Discount ={myProduct.discount} UPC-discount ={myProduct.calcUPCDiscount}");
+            Console.WriteLine($"Tax ammount =${myProduct.price} * {myProduct.tax}={myProduct.calcPriceAfterTax},discount = $ {myProduct.price} *{myProduct.discount}= {myProduct.calcDiscount}, UPC discount ={keysDiscount[myProduct.UPC]}");
+            Console.WriteLine($"Program prints price $ {myProduct.calcPriceAfterAllDiscount}");
+            Console.WriteLine(value: $"Program reports total discount amount{myProduct.calcAllDiscount()}");
+           
+        }
     }
     class product
     {
@@ -47,10 +51,31 @@ namespace Kata
             return this.price + this.calcTax();
         }
 
-        public double calcPriceAfterDiscount()
+        public double calcDiscount()
         {
-            return calcPriceAfterTax() * (1 - this.discount);
+            var myprice= calcPriceAfterTax() *this.discount;
+            return myprice;
+        }
+        public double calcUPCDiscount()
+        {
+            var myprice = this.price * UPCDiscount();
+            return myprice;
+        }
+        public double calcPriceAfterAllDiscount()
+        {
+            var myprice = this.price-calcDiscount()-this.calcUPCDiscount(); 
+            return myprice;
         }
 
+        private double UPCDiscount()
+        {
+            if (priceCalc.keysDiscount.ContainsKey(this.UPC)) return priceCalc.keysDiscount[this.UPC];
+            else return 0;
+        }
+
+        internal object calcAllDiscount()
+        {
+            return this.calcDiscount() + this.calcUPCDiscount();   
+        }
     }
 }
