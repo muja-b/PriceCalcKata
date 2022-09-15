@@ -11,15 +11,20 @@ namespace Kata
         {
             Discount myDiscount = new Discount(true, 0.2);
             Discount myUPCDiscount = new Discount(false, 0.3);
-
             keysDiscount.Add(12345,myUPCDiscount);
-            product myProduct = new("ball", 12345, 15.1567, 0.20, myDiscount, true);
+            List<cost>costs= new List<cost>();
+            costs.Add(new cost(true,.1,0));
+            costs.Add(new cost(true,0,2.4));
+            costs.Add(new cost(true,0,2.0));
+            costs.Add(new cost(true,0,2.8));
+            product myProduct = new("ball", 12345, 15.1567, 0.20, myDiscount, true,costs);
             print(myProduct);
         }
         
         private static void print(product myProduct)
         {
-            Console.WriteLine($"TAX={myProduct.tax * 100}% universal Discount ={myProduct.discount} UPC-discount ={myProduct.calcUPCDiscount()}");
+            Console.WriteLine($"TAX={myProduct.tax * 100}% Discount ={myProduct.discount.discountValue} UPC-discount ={myProduct.calcUPCDiscount()}");
+            Console.WriteLine($"Cost:{myProduct.calcCosts()}");
             Console.WriteLine($"Tax ammount =${myProduct.price} * {myProduct.tax}={myProduct.calcPriceAfterTax()},discount = $ {myProduct.price} *{myProduct.discount}= {myProduct.calcDiscount()}, UPC discount ={keysDiscount[myProduct.UPC].discountValue}");
             Console.WriteLine($"Program prints price $ {myProduct.calcPriceAfterAllDiscount()}");
             Console.WriteLine(value: $"Program reports total discount amount{myProduct.calcAllDiscount()}");
@@ -34,7 +39,8 @@ namespace Kata
         public Discount discount;
         public bool haveDiscount;
         public double tax;
-        public product(String name, int UPC, double price, double tax, Discount discount, bool haveDiscount)
+        public List<cost> Costs;
+        public product(String name, int UPC, double price, double tax, Discount discount, bool haveDiscount,List<cost>costs)
         {
             this.name = name;
             this.UPC = UPC;
@@ -42,6 +48,7 @@ namespace Kata
             this.discount = discount;
             this.tax = tax;
             this.haveDiscount = haveDiscount;
+            this.Costs = costs;
             return;
         }
         public double calcTax()
@@ -89,9 +96,20 @@ namespace Kata
             else return 0;
         }
 
-        internal object calcAllDiscount()
+        public double calcAllDiscount()
         {
             return this.calcDiscount() + this.calcUPCDiscount();   
+        }
+
+        public double calcCosts()
+        {
+            double sum = 0;
+            foreach(cost i in this.Costs)
+            {
+                if (i.isPercentage) sum += this.price;
+                else sum += i.FlatCost;
+            }
+            return sum;
         }
     }
      class Discount
@@ -103,5 +121,28 @@ namespace Kata
             this.beforeTax = beforeTax;
             this.discountValue = discountValue;
         }
-    }
+        }
+        class cost
+        {
+            public bool isPercentage;
+            public double percentage;
+            public double FlatCost;
+            public cost(bool isPercentage, double percentage, double flatCost)
+            {
+                this.isPercentage = isPercentage;
+                this.percentage =Math.Round(percentage,2);
+                FlatCost = flatCost;
+            }
+        public double calcCosts(product myproduct)
+        {
+            if (this.isPercentage)
+            {
+                return myproduct.price * this.percentage;
+            }else
+            {
+                return this.FlatCost;
+            }
+        }
+        }
+
 }
