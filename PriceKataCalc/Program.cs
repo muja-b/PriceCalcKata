@@ -9,8 +9,8 @@ namespace Kata
            
         public static void Main()
         {
-            Discount myDiscount = new Discount(true, 0.2);
-            Discount myUPCDiscount = new Discount(false, 0.3);
+            Discount myDiscount = new Discount(true, false, 0.2);
+            Discount myUPCDiscount = new Discount(false,true, 0.3);
             keysDiscount.Add(12345,myUPCDiscount);
             List<cost>costs= new List<cost>();
             costs.Add(new cost(true,.1,0));
@@ -27,7 +27,7 @@ namespace Kata
             Console.WriteLine($"Cost:{myProduct.calcCosts()}");
             Console.WriteLine($"Tax ammount =${myProduct.price} * {myProduct.tax}={myProduct.calcPriceAfterTax()},discount = $ {myProduct.price} *{myProduct.discount}= {myProduct.calcDiscount()}, UPC discount ={keysDiscount[myProduct.UPC].discountValue}");
             Console.WriteLine($"Program prints price $ {myProduct.calcPriceAfterAllDiscount()}");
-            Console.WriteLine(value: $"Program reports total discount amount{myProduct.calcAllDiscount()}");
+            Console.WriteLine(value: $"Program reports total discount amount {myProduct.calcAllDiscount()}");
            
         }
     }
@@ -79,9 +79,17 @@ namespace Kata
             double myprice;
             if (priceCalc.keysDiscount[this.UPC].beforeTax)
             {
-                myprice = this.price * this.discount.discountValue;
-            }
-             myprice = this.price * UPCDiscount();
+                if (Discount.CombiningAddictive)
+                {
+                    myprice = (this.price - this.calcDiscount()) * this.discount.discountValue;
+
+                }
+                else
+                {
+                    myprice = (this.price - this.calcDiscount()) * this.discount.discountValue;
+                }
+                            }
+            myprice = this.price * UPCDiscount();
             return myprice;
         }
         public double calcPriceAfterAllDiscount()
@@ -115,10 +123,12 @@ namespace Kata
      class Discount
     {
         public bool beforeTax { set; get; }
+        public static bool  CombiningAddictive { get; set; }
         public double discountValue { set; get; }
-        public Discount(bool beforeTax, double discountValue)
+        public Discount(bool beforeTax,bool Combining, double discountValue)
         {
             this.beforeTax = beforeTax;
+            CombiningAddictive = Combining;
             this.discountValue = discountValue;
         }
         }
