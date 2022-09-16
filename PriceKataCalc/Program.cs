@@ -7,7 +7,7 @@ namespace Kata
     class priceCalc
     {
         public static Dictionary<int, Discount> keysDiscount = new();
-               public static void Main()
+        public static void Main()
         {
             Discount myDiscount, myUPCDiscount;
             GenerateDiscounts(out myDiscount, out myUPCDiscount);
@@ -41,11 +41,11 @@ namespace Kata
 
         private static void print(product myProduct)
         {
-            Console.WriteLine($"TAX={myProduct.tax * 100}% Discount ={myProduct.discount.discountValue} UPC-discount ={myProduct.calcUPCDiscount()}");
-            Console.WriteLine($"Cost:{myProduct.calcCosts()}");
-            Console.WriteLine($"Tax ammount ={myProduct.Currency}{myProduct.price} * {myProduct.tax}={myProduct.calcPriceAfterTax()},discount = {myProduct.Currency} {myProduct.price} *{myProduct.discount}= {myProduct.calcDiscount()}, UPC discount ={keysDiscount[myProduct.UPC].discountValue}");
-            Console.WriteLine($"Program prints price {myProduct.Currency} {myProduct.calcPriceAfterAllDiscount()}");
-            Console.WriteLine(value: $"Program reports total discount amount {myProduct.Currency} {myProduct.calcAllDiscount()}");
+            Console.WriteLine($"TAX={ myProduct.tax * 100}% Discount ={myProduct.discount.discountValue} UPC-discount ={myProduct.calcUPCDiscount()}");
+            Console.WriteLine($"Cost:{prescision.ParseFor2Dicimal( myProduct.calcCosts())}");
+            Console.WriteLine($"Tax ammount ={myProduct.Currency}{myProduct.price} * {myProduct.tax}={prescision.ParseFor2Dicimal( myProduct.calcPriceAfterTax())},discount = {myProduct.Currency} {myProduct.price} *{myProduct.discount}= {prescision.ParseFor2Dicimal( myProduct.calcDiscount())}, UPC discount ={keysDiscount[myProduct.UPC].discountValue}");
+            Console.WriteLine($"Program prints price {myProduct.Currency} {prescision.ParseFor2Dicimal(myProduct.calcPriceAfterAllDiscount())}");
+            Console.WriteLine(value: $"Program reports total discount amount {myProduct.Currency} {prescision.ParseFor2Dicimal( myProduct.calcAllDiscount())}");
 
         }
     }
@@ -72,12 +72,12 @@ namespace Kata
         }
         public double calcTax()
         {
-            var tax = this.price * this.tax;
+            var tax = prescision.ParseFor4Dicimal(this.price * this.tax);
             return tax;
         }
         public double calcPriceAfterTax()
         {
-            return this.price + this.calcTax();
+            return prescision.ParseFor4Dicimal(this.price + this.calcTax());
         }
 
         public double calcDiscount()
@@ -87,12 +87,13 @@ namespace Kata
             {
                 myprice = this.price * this.discount.discountValue;
                 myprice = Limit(myprice);
+                myprice = prescision.ParseFor4Dicimal(myprice);
             }
             else
             {
                 myprice = calcPriceAfterTax() * this.discount.discountValue;
                 myprice = Limit(myprice);
-
+                myprice = prescision.ParseFor4Dicimal(myprice);
             }
             return myprice;
         }
@@ -120,21 +121,24 @@ namespace Kata
                 {
                     myprice = (this.price - this.price * UPCDiscount());
                     myprice = Limit(myprice);
+                    myprice = prescision.ParseFor4Dicimal(myprice);
                 }
                 else
                 {
                     myprice = (this.price - this.price * UPCDiscount());
                     myprice = Limit(myprice);
+                    myprice = prescision.ParseFor4Dicimal(myprice);
                 }
             }
             else
                 myprice = this.price * UPCDiscount();
                 myprice=Limit(myprice);
+                myprice = prescision.ParseFor4Dicimal(myprice);
             return myprice;
         }
         public double calcPriceAfterAllDiscount()
         {
-            var myprice = this.price - calcDiscount() - this.calcUPCDiscount();
+            var myprice = prescision.ParseFor4Dicimal( this.price - calcDiscount() - this.calcUPCDiscount());
             return myprice;
         }
 
@@ -146,7 +150,7 @@ namespace Kata
 
         public double calcAllDiscount()
         {
-            return this.calcDiscount() + this.calcUPCDiscount();
+            return prescision.ParseFor4Dicimal( this.calcDiscount() + this.calcUPCDiscount());
         }
 
         public double calcCosts()
@@ -157,7 +161,7 @@ namespace Kata
                 if (i.isPercentage) sum += this.price;
                 else sum += i.FlatCost;
             }
-            return sum;
+            return prescision.ParseFor4Dicimal( sum);
         }
     }
     class Discount
@@ -194,6 +198,17 @@ namespace Kata
             {
                 return this.FlatCost;
             }
+        }
+    }
+    public class prescision
+    {
+        public static double ParseFor4Dicimal(double input)
+        {
+            return Math.Round(input, 4);
+        }
+        public static double ParseFor2Dicimal(double input)
+        {
+            return Math.Round(input, 2);
         }
     }
 
