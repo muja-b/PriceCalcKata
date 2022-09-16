@@ -112,6 +112,7 @@ namespace Kata
             }
             else
                 myprice = this.price * UPCDiscount();
+                myprice=Limit(myprice);
             return myprice;
         }
         public double calcPriceAfterAllDiscount()
