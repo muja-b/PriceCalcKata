@@ -1,0 +1,15 @@
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\obj\Debug\net6.0\PriceKataCalc.csproj.AssemblyReference.cache
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\obj\Debug\net6.0\PriceKataCalc.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\obj\Debug\net6.0\PriceKataCalc.AssemblyInfoInputs.cache
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\obj\Debug\net6.0\PriceKataCalc.AssemblyInfo.cs
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\obj\Debug\net6.0\PriceKataCalc.csproj.CoreCompileInputs.cache
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\bin\Debug\net6.0\PriceKataCalc.exe
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\bin\Debug\net6.0\PriceKataCalc.deps.json
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\bin\Debug\net6.0\PriceKataCalc.runtimeconfig.json
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\bin\Debug\net6.0\PriceKataCalc.dll
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\bin\Debug\net6.0\PriceKataCalc.pdb
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\obj\Debug\net6.0\PriceKataCalc.dll
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\obj\Debug\net6.0\refint\PriceKataCalc.dll
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\obj\Debug\net6.0\PriceKataCalc.pdb
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\obj\Debug\net6.0\PriceKataCalc.genruntimeconfig.cache
+C:\Users\muja\source\repos\PriceKataCalc\PriceKataCalc\obj\Debug\net6.0\ref\PriceKataCalc.dll
