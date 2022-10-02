@@ -1,29 +1,36 @@
 ﻿using System;
 using System.Net.Security;
+using System.Text.RegularExpressions;
 
 namespace Kata
 {
     class priceCalc
-    {   
-         public static Dictionary<int,Discount> keysDiscount=new();
-           
+    {
+        public static Dictionary<int, Discount> keysDiscount = new();
+
         public static void Main()
         {
-            Discount myDiscount = new Discount(true, 0.2);
-            Discount myUPCDiscount = new Discount(false, 0.3);
-
-            keysDiscount.Add(12345,myUPCDiscount);
-            product myProduct = new("ball", 12345, 15.1567, 0.20, myDiscount, true);
+            Discount.CAP = new cost(false, 0, 0.1);
+            Discount myDiscount = new Discount(true, false, 0.2);
+            Discount myUPCDiscount = new Discount(false, true, 0.3);
+            keysDiscount.Add(12345, myUPCDiscount);
+            List<cost> costs = new List<cost>();
+            costs.Add(new cost(true, .1, 0));
+            costs.Add(new cost(true, 0, 2.4));
+            costs.Add(new cost(true, 0, 2.0));
+            costs.Add(new cost(true, 0, 2.8));
+            product myProduct = new("ball", 12345, 15.1567, 0.20, myDiscount, true, costs);
             print(myProduct);
         }
-        
+
         private static void print(product myProduct)
         {
-            Console.WriteLine($"TAX={myProduct.tax * 100}% universal Discount ={myProduct.discount} UPC-discount ={myProduct.calcUPCDiscount()}");
+            Console.WriteLine($"TAX={myProduct.tax * 100}% Discount ={myProduct.discount.discountValue} UPC-discount ={myProduct.calcUPCDiscount()}");
+            Console.WriteLine($"Cost:{myProduct.calcCosts()}");
             Console.WriteLine($"Tax ammount =${myProduct.price} * {myProduct.tax}={myProduct.calcPriceAfterTax()},discount = $ {myProduct.price} *{myProduct.discount}= {myProduct.calcDiscount()}, UPC discount ={keysDiscount[myProduct.UPC].discountValue}");
             Console.WriteLine($"Program prints price $ {myProduct.calcPriceAfterAllDiscount()}");
-            Console.WriteLine(value: $"Program reports total discount amount{myProduct.calcAllDiscount()}");
-           
+            Console.WriteLine(value: $"Program reports total discount amount {myProduct.calcAllDiscount()}");
+
         }
     }
     class product
@@ -34,7 +41,8 @@ namespace Kata
         public Discount discount;
         public bool haveDiscount;
         public double tax;
-        public product(String name, int UPC, double price, double tax, Discount discount, bool haveDiscount)
+        public List<cost> Costs;
+        public product(String name, int UPC, double price, double tax, Discount discount, bool haveDiscount, List<cost> costs)
         {
             this.name = name;
             this.UPC = UPC;
@@ -42,6 +50,7 @@ namespace Kata
             this.discount = discount;
             this.tax = tax;
             this.haveDiscount = haveDiscount;
+            this.Costs = costs;
             return;
         }
         public double calcTax()
@@ -59,27 +68,56 @@ namespace Kata
             double myprice;
             if (this.discount.beforeTax)
             {
-            myprice= this.price *this.discount.discountValue;
+                myprice = this.price * this.discount.discountValue;
+                myprice = Limit(myprice);
             }
             else
             {
-            myprice= calcPriceAfterTax() *this.discount.discountValue;
+                myprice = calcPriceAfterTax() * this.discount.discountValue;
+                myprice = Limit(myprice);
+
             }
             return myprice;
         }
+
+        private double Limit(double myprice)
+        {
+            if (!Discount.CAP.isPercentage)
+            {
+                if (myprice > Discount.CAP.FlatCost) myprice = Discount.CAP.FlatCost;
+            }
+            else
+            {
+                if (myprice > Discount.CAP.percentage * this.price) myprice = Discount.CAP.percentage * this.price;
+            }
+
+            return myprice;
+        }
+
         public double calcUPCDiscount()
         {
             double myprice;
             if (priceCalc.keysDiscount[this.UPC].beforeTax)
             {
-                myprice = this.price * this.discount.discountValue;
+                if (Discount.CombiningAddictive)
+                {
+                    myprice = (this.price - this.price * UPCDiscount());
+                    myprice = Limit(myprice);
+                }
+                else
+                {
+                    myprice = (this.price - this.price * UPCDiscount());
+                    myprice = Limit(myprice);
+                }
             }
-             myprice = this.price * UPCDiscount();
+            else
+                myprice = this.price * UPCDiscount();
+                myprice=Limit(myprice);
             return myprice;
         }
         public double calcPriceAfterAllDiscount()
         {
-            var myprice = this.price-calcDiscount()-this.calcUPCDiscount(); 
+            var myprice = this.price - calcDiscount() - this.calcUPCDiscount();
             return myprice;
         }
 
@@ -89,19 +127,57 @@ namespace Kata
             else return 0;
         }
 
-        internal object calcAllDiscount()
+        public double calcAllDiscount()
         {
-            return this.calcDiscount() + this.calcUPCDiscount();   
+            return this.calcDiscount() + this.calcUPCDiscount();
+        }
+
+        public double calcCosts()
+        {
+            double sum = 0;
+            foreach (cost i in this.Costs)
+            {
+                if (i.isPercentage) sum += this.price;
+                else sum += i.FlatCost;
+            }
+            return sum;
         }
     }
-     class Discount
+    class Discount
     {
         public bool beforeTax { set; get; }
+        public static bool CombiningAddictive { get; set; }
+        public static cost? CAP;
         public double discountValue { set; get; }
-        public Discount(bool beforeTax, double discountValue)
+        public Discount(bool beforeTax, bool Combining, double discountValue)
         {
             this.beforeTax = beforeTax;
+            CombiningAddictive = Combining;
             this.discountValue = discountValue;
         }
     }
+    class cost
+    {
+        public bool isPercentage;
+        public double percentage;
+        public double FlatCost;
+        public cost(bool isPercentage, double percentage, double flatCost)
+        {
+            this.isPercentage = isPercentage;
+            this.percentage = Math.Round(percentage, 2);
+            FlatCost = flatCost;
+        }
+        public double calcCosts(product myproduct)
+        {
+            if (this.isPercentage)
+            {
+                return myproduct.price * this.percentage;
+            }
+            else
+            {
+                return this.FlatCost;
+            }
+        }
+    }
+
 }
