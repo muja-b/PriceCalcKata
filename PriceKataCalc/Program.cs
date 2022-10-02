@@ -7,29 +7,45 @@ namespace Kata
     class priceCalc
     {
         public static Dictionary<int, Discount> keysDiscount = new();
+               public static void Main()
+        {
+            Discount myDiscount, myUPCDiscount;
+            GenerateDiscounts(out myDiscount, out myUPCDiscount);
+            keysDiscount.Add(12345, myUPCDiscount);
+            List<string> Curr = GetCurrencies();
+            product myProduct = new("ball", 12345, 15.1567, 0.20, myDiscount, true, FillCosts(), Curr[0]);
+            print(myProduct);
+        }
 
-        public static void Main()
+        private static List<string> GetCurrencies()
+        {
+            return new() { "NIS", "USD", "JRD" };
+        }
+
+        private static void GenerateDiscounts(out Discount myDiscount, out Discount myUPCDiscount)
         {
             Discount.CAP = new cost(false, 0, 0.1);
-            Discount myDiscount = new Discount(true, false, 0.2);
-            Discount myUPCDiscount = new Discount(false, true, 0.3);
-            keysDiscount.Add(12345, myUPCDiscount);
+            myDiscount = new Discount(true, false, 0.2);
+            myUPCDiscount = new Discount(false, true, 0.3);
+        }
+
+        private static List<cost> FillCosts()
+        {
             List<cost> costs = new List<cost>();
             costs.Add(new cost(true, .1, 0));
             costs.Add(new cost(true, 0, 2.4));
             costs.Add(new cost(true, 0, 2.0));
             costs.Add(new cost(true, 0, 2.8));
-            product myProduct = new("ball", 12345, 15.1567, 0.20, myDiscount, true, costs);
-            print(myProduct);
+            return costs;
         }
 
         private static void print(product myProduct)
         {
             Console.WriteLine($"TAX={myProduct.tax * 100}% Discount ={myProduct.discount.discountValue} UPC-discount ={myProduct.calcUPCDiscount()}");
             Console.WriteLine($"Cost:{myProduct.calcCosts()}");
-            Console.WriteLine($"Tax ammount =${myProduct.price} * {myProduct.tax}={myProduct.calcPriceAfterTax()},discount = $ {myProduct.price} *{myProduct.discount}= {myProduct.calcDiscount()}, UPC discount ={keysDiscount[myProduct.UPC].discountValue}");
-            Console.WriteLine($"Program prints price $ {myProduct.calcPriceAfterAllDiscount()}");
-            Console.WriteLine(value: $"Program reports total discount amount {myProduct.calcAllDiscount()}");
+            Console.WriteLine($"Tax ammount ={myProduct.Currency}{myProduct.price} * {myProduct.tax}={myProduct.calcPriceAfterTax()},discount = {myProduct.Currency} {myProduct.price} *{myProduct.discount}= {myProduct.calcDiscount()}, UPC discount ={keysDiscount[myProduct.UPC].discountValue}");
+            Console.WriteLine($"Program prints price {myProduct.Currency} {myProduct.calcPriceAfterAllDiscount()}");
+            Console.WriteLine(value: $"Program reports total discount amount {myProduct.Currency} {myProduct.calcAllDiscount()}");
 
         }
     }
@@ -42,7 +58,8 @@ namespace Kata
         public bool haveDiscount;
         public double tax;
         public List<cost> Costs;
-        public product(String name, int UPC, double price, double tax, Discount discount, bool haveDiscount, List<cost> costs)
+        public string Currency;
+            public product(String name, int UPC, double price, double tax, Discount discount, bool haveDiscount, List<cost> costs, string currency)
         {
             this.name = name;
             this.UPC = UPC;
@@ -51,7 +68,7 @@ namespace Kata
             this.tax = tax;
             this.haveDiscount = haveDiscount;
             this.Costs = costs;
-            return;
+            this.Currency = currency;
         }
         public double calcTax()
         {
